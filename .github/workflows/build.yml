@@ -1,0 +1,26 @@
+name: Build and Notify
+
+on:
+  push:
+    branches:
+      - main # Или другая ваша основная ветка
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '21'
+
+      - name: Build project
+        run: mvn clean install # Замените на ваш фактический Maven-скрипт сборки
+
+      - name: Notify success
+        run: echo "Build successful!"
