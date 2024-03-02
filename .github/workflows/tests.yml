@@ -1,4 +1,4 @@
-name: Build
+name: Run_Tests
 
 on:
   push:
@@ -6,23 +6,18 @@ on:
       - actions
 
 jobs:
-  build:
+  tests:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Set up JDK 21
+      - name: Set up JDK
         uses: actions/setup-java@v2
         with:
           distribution: 'adopt'
           java-version: '21'
 
-      - name: Build project
-        run: mvn clean install
-
-      - name: Notify success
-      run: |
-        echo "Build successful!"
-        echo "Additional information or details about the build"
+      - name: Run Tests
+        run: mvn test

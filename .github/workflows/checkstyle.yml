@@ -1,4 +1,4 @@
-name: Build
+name: Run_Checkstyle
 
 on:
   push:
@@ -6,23 +6,23 @@ on:
       - actions
 
 jobs:
-  build:
+  checkstyle:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Set up JDK 21
+      - name: Set up JDK
         uses: actions/setup-java@v2
         with:
           distribution: 'adopt'
           java-version: '21'
 
-      - name: Build project
-        run: mvn clean install
+      - name: Run Checkstyle
+        run: mvn checkstyle:check
 
       - name: Notify success
       run: |
-        echo "Build successful!"
-        echo "Additional information or details about the build"
+          echo "Checkstyle successful!"
+          echo "Additional information or details about the build"
