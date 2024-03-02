@@ -1,6 +1,7 @@
 FROM openjdk:21-slim
-EXPOSE 8080
-EXPOSE 8443
-ARG JAR_FILE=target/inquiry-service-0.0.1-SNAPSHOT.jar
-COPY ${JAR_FILE} app.jar
-ENTRYPOINT ["java","-jar","app.jar"]
+ARG JAR_FILE
+COPY target/${JAR_FILE} app.jar
+COPY entrypoint.sh entrypoint.sh
+RUN chmod +x entrypoint.sh
+EXPOSE 8080 8443
+RUN ./entrypoint.sh
