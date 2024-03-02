@@ -1,4 +1,4 @@
-name: Build
+name: Build, Checkstyle, and Tests
 
 on:
   push:
@@ -23,6 +23,43 @@ jobs:
         run: mvn clean install
 
       - name: Notify success
-      run: |
-        echo "Build successful!"
-        echo "Additional information or details about the build"
+        run: |
+          echo "Build successful!"
+          echo "Additional information or details about the build"
+
+  checkstyle:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '21'
+
+      - name: Run Checkstyle
+        run: mvn checkstyle:check
+
+      - name: Notify success
+        run: |
+          echo "Checkstyle successful!"
+          echo "Additional information or details about the build"
+
+  tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '21'
+
+      - name: Run Tests
+        run: mvn test
