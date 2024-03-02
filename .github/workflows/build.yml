@@ -1,9 +1,9 @@
-name: Build and Notify
+name: BuildAction1
 
 on:
   push:
     branches:
-      - main # Или другая ваша основная ветка
+      - actions # Или другая ваша основная ветка
 
 jobs:
   build:
