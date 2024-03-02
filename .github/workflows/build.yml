@@ -3,7 +3,7 @@ name: Build, Checkstyle, and Tests
 on:
   push:
     branches:
-      - actions
+      - main
 
 jobs:
   build:
@@ -11,10 +11,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: main/checkout@v2
 
       - name: Set up JDK 21
-        uses: actions/setup-java@v2
+        uses: main/setup-java@v2
         with:
           distribution: 'adopt'
           java-version: '21'
@@ -32,10 +32,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: main/checkout@v2
 
       - name: Set up JDK
-        uses: actions/setup-java@v2
+        uses: main/setup-java@v2
         with:
           distribution: 'adopt'
           java-version: '21'
@@ -53,10 +53,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: main/checkout@v2
 
       - name: Set up JDK
-        uses: actions/setup-java@v2
+        uses: main/setup-java@v2
         with:
           distribution: 'adopt'
           java-version: '21'
