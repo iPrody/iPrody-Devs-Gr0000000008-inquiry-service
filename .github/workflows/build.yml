@@ -1,4 +1,4 @@
-name: Build, Checkstyle, and Tests
+name: Build, Checkstyle, Tests, Docker Image, and Package
 
 on:
   push:
@@ -11,10 +11,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: main/checkout@v2
+        uses: actions/checkout@v2
 
       - name: Set up JDK 21
-        uses: main/setup-java@v2
+        uses: actions/setup-java@v2
         with:
           distribution: 'adopt'
           java-version: '21'
@@ -32,10 +32,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: main/checkout@v2
+        uses: actions/checkout@v2
 
       - name: Set up JDK
-        uses: main/setup-java@v2
+        uses: actions/setup-java@v2
         with:
           distribution: 'adopt'
           java-version: '21'
@@ -53,13 +53,63 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: main/checkout@v2
+        uses: actions/checkout@v2
 
       - name: Set up JDK
-        uses: main/setup-java@v2
+        uses: actions/setup-java@v2
         with:
           distribution: 'adopt'
           java-version: '21'
 
       - name: Run Tests
         run: mvn test
+
+  docker:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ghcr.io/${{ github.repository_owner }}/${{ github.repository_name }}:latest
+
+  package:
+    needs: [docker]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and Push Docker Image to GitHub Packages
+        run: |
+          docker pull ghcr.io/${{ github.repository_owner }}/${{ github.repository_name }}:latest
+          docker tag ghcr.io/${{ github.repository_owner }}/${{ github.repository_name }}:latest ghcr.io/${{ github.repository_owner }}/${{ github.repository_name }}/package:${{ github.run_id }}
+          docker push ghcr.io/${{ github.repository_owner }}/${{ github.repository_name }}/package:${{ github.run_id }}
