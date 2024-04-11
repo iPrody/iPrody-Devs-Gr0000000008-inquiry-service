@@ -69,9 +69,8 @@ public final class SourceController {
             @ApiResponse(responseCode = "201", description = "Create successfully")
     })
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Void> save(@RequestBody SourceDto entity) {
-        sourceService.save(entity);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+    public SourceDto save(@RequestBody SourceDto entity) {
+        return sourceService.save(entity);
     }
 
     @PutMapping("/sources/id/{id}")

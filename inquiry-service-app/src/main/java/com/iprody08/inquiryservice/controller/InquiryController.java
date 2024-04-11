@@ -71,9 +71,8 @@ public final class InquiryController {
             @ApiResponse(responseCode = "201", description = "Create successfully")
     })
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Void> save(@RequestBody InquiryDto inquiryDto) {
-        inquiryService.save(inquiryDto);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+    public InquiryDto save(@RequestBody InquiryDto inquiryDto) {
+        return inquiryService.save(inquiryDto);
     }
 
     @PutMapping("/inquiries/id/{id}")

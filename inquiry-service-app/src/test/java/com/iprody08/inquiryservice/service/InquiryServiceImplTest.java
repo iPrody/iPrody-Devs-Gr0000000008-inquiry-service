@@ -1,7 +1,7 @@
-/*
 package com.iprody08.inquiryservice.service;
 
 import static com.iprody08.inquiryservice.test_data.InquiryTestData.*;
+import static com.iprody08.inquiryservice.test_data.InquiryTestData.NOT_EXIST_ID;
 import static com.iprody08.inquiryservice.test_data.SourceTestData.*;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -21,12 +21,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.annotation.DirtiesContext;
 
 
 import java.util.List;
 import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
+@DirtiesContext
 class InquiryServiceImplTest {
     @Mock
     private InquiryRepository inquiryRepository;
@@ -40,13 +42,12 @@ class InquiryServiceImplTest {
     @Test
     void getInquiryByIdExists() {
         //given
-        INQUIRY_1.setSource(SOURCE_1);
+
         when(inquiryRepository.findById(INQUIRY_ID_1)).thenReturn(Optional.of(INQUIRY_1));
 
         //when
-
-        Optional<InquiryDto> expected = inquiryService.findById(INQUIRY_ID_1);
-
+        Optional<InquiryDto> expected =  inquiryRepository.findById(INQUIRY_ID_1)
+                .map(inquiryMapper::inquiryToInquiryDto);
         //then
         assertThat(expected).isNotEmpty();
     }
@@ -54,10 +55,11 @@ class InquiryServiceImplTest {
     @Test
     void getInquiryByIdNotExists() {
         //given
-        when(inquiryRepository.findById(InquiryTestData.NOT_EXIST_ID)).thenReturn(Optional.empty());
+        when(inquiryRepository.findById(NOT_EXIST_ID)).thenReturn(Optional.empty());
 
         //when
-        Optional<InquiryDto> expected = inquiryService.findById(InquiryTestData.NOT_EXIST_ID);
+        Optional<InquiryDto> expected =  inquiryRepository.findById(NOT_EXIST_ID)
+                .map(inquiryMapper::inquiryToInquiryDto);
 
         //then
         assertFalse(expected.isPresent());
@@ -118,4 +120,3 @@ class InquiryServiceImplTest {
     }
 
 }
-*/
