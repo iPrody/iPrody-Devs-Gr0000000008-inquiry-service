@@ -60,15 +60,14 @@ public class SourceServiceImpl implements SourceService {
     }
 
     @Override
-    public void save(SourceDto entity) {
+    public SourceDto save(SourceDto entity) {
         final Source source = sourceMapper.sourceDtoToSource(entity);
-        sourceRepository.save(source);
+        return  sourceMapper.sourceToSourceDto(sourceRepository.save(source));
     }
 
     @Override
     public Optional<SourceDto> findById(long id) {
-        return sourceRepository.findById(id)
-                .map(sourceMapper::sourceToSourceDto);
+        return sourceRepository.findById(id).map(sourceMapper::sourceToSourceDto);
     }
 
     @Override

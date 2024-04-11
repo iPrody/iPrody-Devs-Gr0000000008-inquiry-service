@@ -1,92 +1,119 @@
 package com.iprody08.inquiryservice.service;
 
-import static org.mockito.Mockito.*;
+import static com.iprody08.inquiryservice.test_data.SourceTestData.*;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 import com.iprody08.inquiryservice.dao.SourceRepository;
 import com.iprody08.inquiryservice.dto.SourceDto;
 import com.iprody08.inquiryservice.dto.mapper.SourceMapper;
 import com.iprody08.inquiryservice.entity.Source;
-import com.iprody08.inquiryservice.filter.SourceFilter;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+
+import com.iprody08.inquiryservice.test_data.InquiryTestData;
+import com.iprody08.inquiryservice.test_data.SourceTestData;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 
-import java.util.Collections;
+
 import java.util.List;
+import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
 class SourceServiceImplTest {
     @Mock
     private SourceRepository sourceRepository;
 
-    @Mock
-    private SourceMapper sourceMapper;
+    @Spy
+    private SourceMapper sourceMapper = Mappers.getMapper(SourceMapper.class);
 
     @InjectMocks
     private SourceServiceImpl sourceService;
 
-    private Source source;
-    private SourceDto sourceDto;
-
-    @BeforeEach
-    void setUp() {
-        source = new Source();
-        sourceDto = new SourceDto(null, "Test Name");
-    }
-
-    @AfterEach
-    void clearRepository() {
-        sourceService.deleteAll();
-    }
-
     @Test
-    void whenFiltersAreProvided_thenSourcesAreFiltered() {
+    void getSourceByIdExists() {
         //given
-        SourceFilter filterBy = new SourceFilter();
-        filterBy.setName("Test Name");
 
-        when(sourceRepository.findAll(any(Specification.class), any(Pageable.class)))
-                .thenReturn(new PageImpl<>(Collections.singletonList(source)));
-        when(sourceMapper.sourceToSourceDto(any(Source.class))).thenReturn(sourceDto);
+        when(sourceRepository.findById(SOURCE_ID_1)).thenReturn(Optional.of(SOURCE_1));
 
         //when
-        sourceService.save(sourceDto);
-        List<SourceDto> results = sourceService.findAll(0, 10, "name", "asc", filterBy);
+
+        Optional<SourceDto> expected = sourceService.findById(SOURCE_ID_1);
 
         //then
-        assertFalse(results.isEmpty());
-        assertEquals(1, results.size());
-        assertEquals(sourceDto, results.get(0));
+        assertThat(expected).isNotEmpty();
     }
 
     @Test
-    void testSave() {
+    void getSourceByIdNotExists() {
         //given
-        when(sourceMapper.sourceDtoToSource(any(SourceDto.class))).thenReturn(source);
+        when(sourceRepository.findById(NOT_EXIST_ID)).thenReturn(Optional.empty());
 
         //when
-        sourceService.save(sourceDto);
+        Optional<SourceDto> expected = sourceService.findById(NOT_EXIST_ID);
 
-        //then:
-        verify(sourceMapper).sourceDtoToSource(sourceDto);
-        verify(sourceRepository).save(source);
+        //then
+        assertFalse(expected.isPresent());
     }
 
     @Test
-    void testDeleteAll() {
+    void findAllSources() {
         //given
-        sourceService.deleteAll();
+        List<Source> sources = getSources();
+
+        //when
+        when(sourceRepository.findAll()).thenReturn(sources);
+
+        // then
+        List<SourceDto> expected = sourceService.findAll();
+        assertThat(expected).isNotNull();
+        assertThat(expected.size()).isEqualTo(3);
+        List<SourceDto> actual = sources.stream().map(SourceTestData::getSourceDto).toList();
+        assertEquals(actual, expected);
+    }
+
+    @Test
+    void createNewSource() {
+        //given
+        Source source = getNewSource();
+        source.setId(SOURCE_ID_1);
+        source.setInquiries(InquiryTestData.getInquiries());
+        SourceDto sourceDto = getSourceDto(source);
+
+        when(sourceRepository.save(any(Source.class))).thenReturn(source);
+
+        //when
+        SourceDto expected = sourceService.save(sourceDto);
 
         //then
-        verify(sourceRepository).deleteAll();
+        assertThat(expected).isNotNull();
+        assertEquals(expected, sourceDto);
+
+    }
+
+    @Test
+    void updateNameInSource() {
+        //given
+        Source source = getNewSource();
+        source.setId(SOURCE_ID_1);
+        source.setInquiries(InquiryTestData.getInquiries());
+        String oldName = source.getName();
+        source.setName("NewNameForUpdate");
+        SourceDto sourceDto = getSourceDto(source);
+
+        when(sourceRepository.save(any(Source.class))).thenReturn(source);
+
+        //when
+        String newName = sourceService.save(sourceDto).getName();
+
+        //then
+        assertNotEquals(oldName, newName);
     }
 
 }
+

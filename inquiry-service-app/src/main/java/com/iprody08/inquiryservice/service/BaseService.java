@@ -5,7 +5,7 @@ import java.util.Optional;
 
 public interface BaseService<T> {
     List<T> findAll();
-    void save(T entity);
+    T save(T entity);
     Optional<T> findById(long id);
     void deleteById(long id);
     void deleteAll();

@@ -65,4 +65,13 @@ public class Inquiry {
         }
     }
 
+    public static Inquiry createNewInquiry(Long id, String comment, InquiryStatus status, String note, Source source) {
+        Inquiry inquiry = new Inquiry();
+        inquiry.setId(id);
+        inquiry.setComment(comment);
+        inquiry.setStatus(status);
+        inquiry.setNote(note);
+        inquiry.setSource(source);
+        return inquiry;
+    }
 }

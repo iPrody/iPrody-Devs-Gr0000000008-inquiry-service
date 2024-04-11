@@ -45,4 +45,14 @@ public class Source {
     @OneToMany(mappedBy = "source")
     private List<Inquiry> inquiries;
 
+    public Source(Long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+    public static Source createNewProduct(Long id, String name) {
+        Source source = new Source();
+        source.setId(id);
+        source.setName(name);
+        return source;
+    }
 }
