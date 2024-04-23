@@ -1,5 +1,6 @@
 package com.iprody08.inquiryservice.service;
 
+
 import static com.iprody08.inquiryservice.test_data.SourceTestData.*;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -11,7 +12,6 @@ import com.iprody08.inquiryservice.dto.mapper.SourceMapper;
 import com.iprody08.inquiryservice.entity.Source;
 
 import com.iprody08.inquiryservice.test_data.InquiryTestData;
-import com.iprody08.inquiryservice.test_data.SourceTestData;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
@@ -19,14 +19,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.annotation.DirtiesContext;
 
 
 import java.util.List;
 import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
-@DirtiesContext
 class SourceServiceImplTest {
     @Mock
     private SourceRepository sourceRepository;
@@ -39,16 +37,17 @@ class SourceServiceImplTest {
 
     @Test
     void getSourceByIdExists() {
-        //given
 
+        //given
         when(sourceRepository.findById(SOURCE_ID_1)).thenReturn(Optional.of(SOURCE_1));
 
         //when
-
-        Optional<SourceDto> expected = sourceService.findById(SOURCE_ID_1);
+        Optional<SourceDto> result = sourceService.findById(SOURCE_ID_1);
 
         //then
-        assertThat(expected).isNotEmpty();
+        assertThat(result.get()).usingRecursiveComparison().isEqualTo(sourceMapper.sourceToSourceDto(SOURCE_1));
+        assertEquals(result.get().getId(), SOURCE_1.getId());
+        assertEquals(result.get().getName(), SOURCE_1.getName());
     }
 
     @Test
@@ -66,17 +65,18 @@ class SourceServiceImplTest {
     @Test
     void findAllSources() {
         //given
-        List<Source> sources = getSources();
+        when(sourceRepository.findAll()).thenReturn(getSources());
 
-        //when
-        when(sourceRepository.findAll()).thenReturn(sources);
-
-        // then
+        // when
         List<SourceDto> expected = sourceService.findAll();
+
+        //then
         assertThat(expected).isNotNull();
         assertThat(expected.size()).isEqualTo(3);
-        List<SourceDto> actual = sources.stream().map(SourceTestData::getSourceDto).toList();
-        assertEquals(actual, expected);
+        for (int i = 0; i < expected.size(); i++) {
+            assertThat(expected.get(i).getId()).isEqualTo(getSources().get(i).getId());
+            assertThat(expected.get(i).getName()).isEqualTo(getSources().get(i).getName());
+        }
     }
 
     @Test
@@ -118,4 +118,3 @@ class SourceServiceImplTest {
     }
 
 }
-

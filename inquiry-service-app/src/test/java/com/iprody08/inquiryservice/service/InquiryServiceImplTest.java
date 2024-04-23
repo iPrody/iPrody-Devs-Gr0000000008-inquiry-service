@@ -13,7 +13,6 @@ import com.iprody08.inquiryservice.dto.mapper.InquiryMapper;
 import com.iprody08.inquiryservice.entity.Inquiry;
 
 import com.iprody08.inquiryservice.entity.enums.InquiryStatus;
-import com.iprody08.inquiryservice.test_data.InquiryTestData;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
@@ -21,14 +20,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.annotation.DirtiesContext;
 
 
 import java.util.List;
 import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
-@DirtiesContext
 class InquiryServiceImplTest {
     @Mock
     private InquiryRepository inquiryRepository;
@@ -42,14 +39,17 @@ class InquiryServiceImplTest {
     @Test
     void getInquiryByIdExists() {
         //given
-
         when(inquiryRepository.findById(INQUIRY_ID_1)).thenReturn(Optional.of(INQUIRY_1));
 
         //when
-        Optional<InquiryDto> expected =  inquiryRepository.findById(INQUIRY_ID_1)
-                .map(inquiryMapper::inquiryToInquiryDto);
+        Optional<InquiryDto> result = inquiryService.findById(INQUIRY_ID_1);
+
         //then
-        assertThat(expected).isNotEmpty();
+        assertThat(result.get()).usingRecursiveComparison().isEqualTo(inquiryMapper.inquiryToInquiryDto(INQUIRY_1));
+        assertEquals(result.get().getId(), INQUIRY_1.getId());
+        assertEquals(result.get().getComment(), INQUIRY_1.getComment());
+        assertEquals(result.get().getStatus(), INQUIRY_1.getStatus());
+
     }
 
     @Test
@@ -58,27 +58,31 @@ class InquiryServiceImplTest {
         when(inquiryRepository.findById(NOT_EXIST_ID)).thenReturn(Optional.empty());
 
         //when
-        Optional<InquiryDto> expected =  inquiryRepository.findById(NOT_EXIST_ID)
-                .map(inquiryMapper::inquiryToInquiryDto);
+        Optional<InquiryDto> expected =  inquiryService.findById(NOT_EXIST_ID);
 
         //then
         assertFalse(expected.isPresent());
+
     }
 
     @Test
     void findAllInquiries() {
         //given
-        List<Inquiry> inquiries = getInquiries();
+        when(inquiryRepository.findAll()).thenReturn(getInquiries());
 
-        //when
-        when(inquiryRepository.findAll()).thenReturn(inquiries);
-
-        // then
+        // when
         List<InquiryDto> expected = inquiryService.findAll();
+
+        //then
         assertThat(expected).isNotNull();
         assertThat(expected.size()).isEqualTo(3);
-        List<InquiryDto> actual = inquiries.stream().map(InquiryTestData::getInquiryDto).toList();
-        assertEquals(actual, expected);
+
+        for (int i = 0; i < expected.size(); i++) {
+            assertThat(expected.get(i).getId()).isEqualTo(getInquiries().get(i).getId());
+            assertThat(expected.get(i).getComment()).isEqualTo(getInquiries().get(i).getComment());
+            assertThat(expected.get(i).getStatus()).isEqualTo(getInquiries().get(i).getStatus());
+            assertThat(expected.get(i).getNote()).isEqualTo(getInquiries().get(i).getNote());
+        }
     }
 
     @Test
@@ -101,7 +105,7 @@ class InquiryServiceImplTest {
     }
 
     @Test
-    void updateNameInInquiry() {
+    void updateStatusInInquiry() {
         //given
         Inquiry inquiry = getNewInquiry();
         inquiry.setId(SOURCE_ID_1);

@@ -57,7 +57,7 @@ public class InquiryServiceImpl implements InquiryService {
             inquiryPage = inquiryRepository.findAll(spec, paging);
 
         } else {
-            inquiryPage = inquiryRepository.findAllWithSource(paging);
+            inquiryPage = inquiryRepository.findAll(paging);
         }
 
         return inquiryPage.getContent()
@@ -77,9 +77,10 @@ public class InquiryServiceImpl implements InquiryService {
 
     @Override
     public Optional<InquiryDto> findById(long id) {
-        return inquiryRepository.findByIdWithSource(id).map(inquiryMapper::inquiryToInquiryDto);
+        return inquiryRepository.findById(id).map(inquiryMapper::inquiryToInquiryDto);
 
     }
+
 
     @Override
     public void deleteById(long id) {

@@ -7,19 +7,18 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
 public interface InquiryRepository extends JpaRepository<Inquiry, Long>, JpaSpecificationExecutor<Inquiry> {
-    @Query("SELECT i FROM Inquiry i JOIN FETCH i.source")
-    Page<Inquiry> findAllWithSource(Pageable paging);
+
+    @EntityGraph(attributePaths = {"source"})
+    Page<Inquiry> findAll(Pageable pageable);
 
     @EntityGraph(attributePaths = {"source"})
     Page<Inquiry> findAll(Specification<Inquiry> spec, Pageable pageable);
 
+    @EntityGraph(attributePaths = {"source"})
+    Optional<Inquiry> findById(Long id);
 
-    @Query("SELECT i FROM Inquiry i JOIN FETCH i.source WHERE i.id = :id")
-    Optional<Inquiry> findByIdWithSource(@Param("id") long id);
 }

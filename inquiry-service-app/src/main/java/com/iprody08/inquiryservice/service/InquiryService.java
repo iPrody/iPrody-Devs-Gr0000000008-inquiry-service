@@ -9,5 +9,4 @@ import java.util.List;
 public interface InquiryService extends BaseService<InquiryDto> {
     List<InquiryDto> findAll(Integer pageNo, Integer pageSize, String sortBy,
                              String sortDirection, InquiryFilter filterBy);
-
 }
