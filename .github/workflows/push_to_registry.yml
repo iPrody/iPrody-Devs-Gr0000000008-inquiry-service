@@ -11,13 +11,14 @@ name: Build-And-Push-to-GHCR-CI
 on:
   push:
     branches:
-      - master
-      - main
+      - '*'
+#      - master
+#      - main
 
 env:
   REGISTRY: ghcr.io
   NAME_IMAGE: iprody/iprody-devs-gr0000000008-inquiry-service
-  JAR_FILE: inquiry-service-0.0.1-SNAPSHOT.jar
+  JAR_FILE: inquiry-service-app-0.0.1-SNAPSHOT.jar
 
 jobs:
   push_to_github_registry:
@@ -51,7 +52,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
         with:
-          context: ./inquiry-service-app
+          context: ./inquiry-service-app/
           file: ./inquiry-service-app/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
