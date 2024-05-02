@@ -68,6 +68,11 @@
 			<artifactId>mapstruct</artifactId>
 			<version>1.5.5.Final</version>
 		</dependency>
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-registry-prometheus</artifactId>
+			<scope>runtime</scope>
+		</dependency>
 	</dependencies>
 
 	<build>

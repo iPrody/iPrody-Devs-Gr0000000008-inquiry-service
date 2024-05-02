@@ -4,6 +4,8 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 secrets/
+Docker/services-local.yml
+Docker/gateway/log/
 
 ### STS ###
 .apt_generated

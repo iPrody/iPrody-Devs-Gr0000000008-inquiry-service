@@ -11,7 +11,7 @@ services:
     image: postgres:latest
     restart: always
     env_file:
-      - ./secrets/customer-db.env
+      - ../secrets/customer-db.env
     ports:
       - 5432:5432
     volumes:
@@ -24,7 +24,7 @@ services:
     image: postgres:latest
     restart: always
     env_file:
-      - ./secrets/product-db.env
+      - ../secrets/product-db.env
     expose:
       - 5433
     ports:
@@ -41,7 +41,7 @@ services:
     image: postgres:latest
     restart: always
     env_file:
-      - ./secrets/inquiry-db.env
+      - ../secrets/inquiry-db.env
     expose:
       - 5434
     ports:
@@ -63,7 +63,7 @@ services:
     image: dpage/pgadmin4
     restart: always
     env_file:
-      - ./secrets/pgadmin4.env
+      - ../secrets/pgadmin4.env
     volumes:
       - pgAdmin-data:/var/lib/pgadmin
     ports:
