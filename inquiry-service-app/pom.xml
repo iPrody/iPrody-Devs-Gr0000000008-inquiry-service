@@ -83,17 +83,17 @@
 		</dependency>
 		<dependency>
 			<groupId>com.iprodi08</groupId>
-			<artifactId>inquiry-service-dto</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>com.iprodi08</groupId>
 			<artifactId>product-service-dto</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.iprody08</groupId>
 			<artifactId>customer-service-dto</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.iprodi08</groupId>
+			<artifactId>inquiry-service-dto</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<!--Telegram Api-->
