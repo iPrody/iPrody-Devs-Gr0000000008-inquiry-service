@@ -8,9 +8,12 @@ import com.iprody08.inquiryservice.service.InquiryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 
@@ -18,9 +21,16 @@ import java.util.List;
 @RequestMapping("/api/v1")
 public final class InquiryController {
     private final InquiryService inquiryService;
+    private final WebClient.Builder webClientBuilder;
 
-    public InquiryController(final InquiryService inquiryService) {
+    @Value("${customer.service.url}")
+    private String customerServiceUrl;
+    @Value("${product.service.url}")
+    private String productServiceUrl;
+
+    public InquiryController(InquiryService inquiryService, WebClient.Builder webClientBuilder) {
         this.inquiryService = inquiryService;
+        this.webClientBuilder = webClientBuilder;
     }
 
     @GetMapping("/inquiries/id/{id}")
@@ -85,6 +95,41 @@ public final class InquiryController {
         return inquiryService.update(inquiryDto)
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> new NotFoundException("There is no Source with id " + id));
+    }
+
+    @GetMapping("/inquiries/id/{id}/customer-info")
+    @Operation(summary = "Get customer", description = "Returns customers information")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully received")
+    })
+    @ResponseStatus(HttpStatus.OK)
+    public Mono<String> findCustomerById(@PathVariable long id) {
+        Long customerId =  inquiryService.findById(id).orElseThrow().getCustomerRefId();
+
+        String url = customerServiceUrl  + customerId;
+        System.out.println(url);
+        return webClientBuilder.build()
+                .get()
+                .uri(url)
+                .retrieve()
+                .bodyToMono(String.class);
+    }
+
+    @GetMapping("/inquiries/id/{id}/product-info")
+    @Operation(summary = "Get product", description = "Returns products information")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully received")
+    })
+    @ResponseStatus(HttpStatus.OK)
+    public Mono<String> findProductById(@PathVariable long id) {
+        Long customerId =  inquiryService.findById(id).orElseThrow().getCustomerRefId();
+        String url = productServiceUrl  + customerId;
+        System.out.println(url);
+        return webClientBuilder.build()
+                .get()
+                .uri(url)
+                .retrieve()
+                .bodyToMono(String.class);
     }
 
 }
