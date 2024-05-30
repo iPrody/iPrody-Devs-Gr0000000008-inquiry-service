@@ -23,6 +23,12 @@ public class InquiryDto {
 
     private String note;
 
+    private Long productRefId;
+
+    private Long customerRefId;
+
+    private Long managerRefId;
+
     public InquiryDto(SourceDto sourceId, String comment, String status, String note) {
         this.sourceId = sourceId;
         this.comment = comment;
