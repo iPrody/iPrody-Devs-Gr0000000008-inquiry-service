@@ -39,6 +39,7 @@ services:
     restart: unless-stopped
     volumes:
       - ./gateway/nginx.conf:/etc/nginx/nginx.conf
+      - ./gateway/log:/var/log/nginx
       - ../secrets/iprody_server.crt:/etc/nginx/ssl/iprody.crt
       - ../secrets/iprody_server.key:/etc/nginx/ssl/iprody.key
     ports:
