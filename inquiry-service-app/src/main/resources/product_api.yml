@@ -10,7 +10,7 @@ info:
     email: sulfur1917@gmail.com
   version: '1.0'
 servers:
-  - url: http://localhost
+  - url: http://product-service:8787
     description: Generated server url
 paths:
   "/api/products":

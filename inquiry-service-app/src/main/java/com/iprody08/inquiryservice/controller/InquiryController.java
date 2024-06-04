@@ -1,9 +1,14 @@
 package com.iprody08.inquiryservice.controller;
 
+import com.iprody08.inquiryservice.customer.api.CustomerControllerApi;
+import com.iprody08.inquiryservice.customer.model.CustomerDto;
 import com.iprody08.inquiryservice.dto.InquiryDto;
 import com.iprody08.inquiryservice.entity.enums.InquiryStatus;
 import com.iprody08.inquiryservice.exception_handlers.NotFoundException;
 import com.iprody08.inquiryservice.filter.InquiryFilter;
+import com.iprody08.inquiryservice.product.api.ProductControllerApi;
+import com.iprody08.inquiryservice.product.invoker.ApiException;
+import com.iprody08.inquiryservice.product.model.ProductDto;
 import com.iprody08.inquiryservice.service.InquiryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -18,9 +23,13 @@ import java.util.List;
 @RequestMapping("/api/v1")
 public final class InquiryController {
     private final InquiryService inquiryService;
+    private final CustomerControllerApi customerControllerApi;
+    private final ProductControllerApi productControllerApi;
 
     public InquiryController(final InquiryService inquiryService) {
         this.inquiryService = inquiryService;
+        this.customerControllerApi = new CustomerControllerApi();
+        this.productControllerApi = new ProductControllerApi();
     }
 
     @GetMapping("/inquiries/id/{id}")
@@ -85,6 +94,29 @@ public final class InquiryController {
         return inquiryService.update(inquiryDto)
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> new NotFoundException("There is no Source with id " + id));
+    }
+
+
+    @GetMapping("/inquiries/id/{id}/customer-info")
+    @Operation(summary = "Get product", description = "Returns products information")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully received")
+    })
+    @ResponseStatus(HttpStatus.OK)
+    public CustomerDto findCustomerById(@PathVariable long id) {
+        Long customerId =  inquiryService.findById(id).orElseThrow().getCustomerRefId();
+        return customerControllerApi.getCustomerById(customerId);
+    }
+
+    @GetMapping("/inquiries/id/{id}/product-info")
+    @Operation(summary = "Get product", description = "Returns products information")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully received")
+    })
+    @ResponseStatus(HttpStatus.OK)
+    public ProductDto findProductById(@PathVariable long id) throws ApiException {
+        Long productId =  inquiryService.findById(id).orElseThrow().getProductRefId();
+        return productControllerApi.getProductById(productId);
     }
 
 }
